@@ -21,8 +21,9 @@ class Node:
 
             output += self.bias
             
-            # output = max(0, output)
+            
             output = sigmoid(output)
+            output = max(0, output)
             self.output = output
         except:
             print("weights and inputs should be the same lenght")

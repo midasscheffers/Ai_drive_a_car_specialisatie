@@ -7,15 +7,14 @@ import pyglet
 class Player:
 
     def __init__(self, pos, amount_of_rays, selected):
-        self.net = Network([amount_of_rays + 1, 16, 16, 2])
+        self.net = Network([amount_of_rays, 16, 16, 2])
         self.net_input = []
-        self.fitnes = 0
         self.pos = pos
         self.vel = [1, 0]
         self.accel = [0, 0]
         self.rot = 0
         self.dead = False
-        self.size = 20
+        self.size = 10
         self.selected = selected
         self.img = pyglet.resource.image("car.png")
         self.img.width = self.size * 2
@@ -29,6 +28,9 @@ class Player:
         self.rays = []
         self.detections = []
         self.ray_pts = []
+        self.score = 0
+        self.fitness = 0
+        self.check_piont = 1
         for i in range(0, amount_of_rays):
             self.rays.append(Ray(self.pos, mth.radians((360/self.amount_of_rays)*i)))
             self.detections.append(0)
@@ -56,11 +58,12 @@ class Player:
         self.sprite.y = self.pos[1]
         for r in self.rays:
             r.pos = self.pos
+        self.score += 1
 
 
     def check_for_hit(self):
         for i in range(len(self.detections)):
-            if self.detections[i] < self.size:
+            if self.detections[i] < mth.pow(self.size, 2):
                 self.dead = True
                 break
 
@@ -68,7 +71,6 @@ class Player:
 
     def set_net_input(self):
         self.net_input = []
-        self.net_input.append(self.rot)
         for i in self.detections:
             self.net_input.append(i)
         self.net.set_input(self.net_input)
