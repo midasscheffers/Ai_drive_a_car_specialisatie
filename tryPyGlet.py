@@ -14,9 +14,10 @@ anchor_x="center", anchor_y="center"
 gen = 0
 
 amount_of_rays = 4
-players = players = []
-am_of_players = 70
-cycles = 10
+players = []
+am_of_players = 100
+cycles = 1
+
 
 walls = []
 
@@ -27,6 +28,7 @@ walls.append(Wall([1, 1], [window.width, 1]))
 walls.append(Wall( [window.width/2-300, window.height/2-200], [window.width/2+300, window.height/2-200] ))
 walls.append(Wall( [window.width/2-300, window.height/2-200], [window.width/2-400, window.height/2-100] ))
 walls.append(Wall( [window.width/2-400, window.height/2+100], [window.width/2-400, window.height/2-100] ))
+walls.append(Wall( [window.width/2-300, window.height/2], [window.width/2+300, window.height/2] ))
 walls.append(Wall( [window.width/2-300, window.height/2], [window.width/2+300, window.height/2] ))
 
 
@@ -47,23 +49,29 @@ def reset_players(players):
         p.dead = False
 
 
-def all_dead():
+def all_dead(players):
     for p in players:
         if not p.dead:
             return False
     return True
 
 def repopulate(players):
-    print("repopulate")
     calculate_fitness(players)
 
     new_players = []
 
-    for p in players:
-        new_players.append(pick_player(players))
-        
+    for i in range(len(players)):
+        p = pick_player(players)
+        p.dead = False
+        new_players.append(p)
+    
+    print(players)
+    players = []
+    print(players)
     players = new_players
-    print("done repopulating")
+    print(players)
+    return players
+    
 
 def pick_player(players):
     index = 0
@@ -72,11 +80,10 @@ def pick_player(players):
         rand -= players[index].fitness
         index += 1
     index -= 1
-
-    p = players[index]
     child = Player([window.width/2, window.height/2-100], amount_of_rays, False)
-    child.net = copy.deepcopy(p.net)
-    child.net.randomize_net(2)
+    child.net = copy.deepcopy(players[index].net)
+    if r.randint(0,1) == 1:
+        child.net.randomize_net(2)
     return child
 
 def calculate_fitness(players):
@@ -84,11 +91,12 @@ def calculate_fitness(players):
     for p in players:
         sum += p.score
     for p in players:
-        p.fitness = mth.pow(p.check_piont, 2) * p.score / sum
+        p.fitness = (mth.pow(p.check_piont, 2) * p.score) / sum
 
 
 @window.event
 def on_draw():
+    # if gen % 10 == 0:
     window.clear()
     label.draw()
     for p in players:
@@ -100,19 +108,22 @@ def on_draw():
 
 def update(delta_time):
     global gen
-    # for i in range(cycles):
-    if all_dead():
-        reset_players(players)
-        repopulate(players)
-        gen += 1
-        print(gen)
+    global players
+    for i in range(cycles):
+        if all_dead(players):
+            
+            players = repopulate(players)
+            gen += 1
+            print(gen)
 
-    for p in players:
-        if not p.dead:
-            p.cast_rays(walls)
-            p.set_net_input()
-            p.move(delta_time)
-            p.check_for_hit()
+
+        for p in players:
+            if not p.dead:
+                p.cast_rays(walls)
+                p.set_net_input()
+                p.move(delta_time)
+                p.check_for_hit()
+    
                 
         
 

@@ -7,14 +7,14 @@ import pyglet
 class Player:
 
     def __init__(self, pos, amount_of_rays, selected):
-        self.net = Network([amount_of_rays, 16, 16, 2])
+        self.net = Network([amount_of_rays, 5, 10, 2])
         self.net_input = []
         self.pos = pos
         self.vel = [1, 0]
         self.accel = [0, 0]
         self.rot = 0
         self.dead = False
-        self.size = 10
+        self.size = 20
         self.selected = selected
         self.img = pyglet.resource.image("car.png")
         self.img.width = self.size * 2
