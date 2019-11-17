@@ -7,14 +7,27 @@ import pyglet
 class Player:
 
     def __init__(self, pos, amount_of_rays, selected):
-        self.net = Network([amount_of_rays, 5, 10, 2])
+        # variables for player
+            # network
+        self.net = Network([amount_of_rays, 5, 2])
         self.net_input = []
+        self.amount_of_rays = amount_of_rays
+        self.score = 0
+        self.fitness = 0
+        self.check_piont = 1
+        self.rays = []
+        self.detections = []
+        self.ray_pts = []
+            # game
         self.pos = pos
         self.vel = [1, 0]
         self.accel = [0, 0]
         self.rot = 0
         self.dead = False
         self.size = 20
+        self.speed = 100
+        self.rot_speed = 120
+            # draw
         self.selected = selected
         self.img = pyglet.resource.image("car.png")
         self.img.width = self.size * 2
@@ -22,15 +35,8 @@ class Player:
         self.img.anchor_x = self.img.width/2
         self.img.anchor_y = self.img.height/2
         self.sprite = pyglet.sprite.Sprite(self.img)
-        self.speed = 100
-        self.rot_speed = 100
-        self.amount_of_rays = amount_of_rays
-        self.rays = []
-        self.detections = []
-        self.ray_pts = []
-        self.score = 0
-        self.fitness = 0
-        self.check_piont = 1
+        
+        #create rays
         for i in range(0, amount_of_rays):
             self.rays.append(Ray(self.pos, mth.radians((360/self.amount_of_rays)*i)))
             self.detections.append(0)
@@ -43,17 +49,13 @@ class Player:
             self.rot += net_out[0] * self.rot_speed * delta_time
         else:
             self.rot -= net_out[0] * self.rot_speed * delta_time
-        # self.rot +=r.random() * self.rot_speed * delta_time
-        # self.rot += self.rot_speed
         self.sprite.rotation = -self.rot
         self.accel[0] = mth.cos(mth.radians(self.rot))
         self.accel[1] = mth.sin(mth.radians(self.rot))
         self.vel[0] = self.accel[0]
         self.vel[1] = self.accel[1]
-        # self.vel[0] = max(-1, min(self.vel[0], 1))
-        # self.vel[1] = max(-1, min(self.vel[1], 1))
-        self.pos[0] += self.vel[0] * self.speed * delta_time
-        self.pos[1] += self.vel[1] * self.speed * delta_time
+        self.pos[0] += self.speed * delta_time * self.vel[0]
+        self.pos[1] += self.speed * delta_time * self.vel[1]
         self.sprite.x = self.pos[0]
         self.sprite.y = self.pos[1]
         for r in self.rays:
@@ -66,6 +68,10 @@ class Player:
             if self.detections[i] < mth.pow(self.size, 2):
                 self.dead = True
                 break
+
+    def out_off_bounds(self, xmax, ymax):
+        if self.pos[0] < 0 or self.pos[0] > xmax or self.pos[1] < 0 or self.pos[1] > ymax:
+            self.dead = True
 
 
 
@@ -102,14 +108,3 @@ class Player:
                 self.ray_pts[i] = closest
             else:
                 self.detections[i] = 99999999999
-
-    def map_to_range(self, value, leftMin, leftMax, rightMin, rightMax):
-        # Figure out how 'wide' each range is
-        leftSpan = leftMax - leftMin
-        rightSpan = rightMax - rightMin
-
-        # Convert the left range into a 0-1 range (float)
-        valueScaled = float(value - leftMin) / float(leftSpan)
-
-        # Convert the 0-1 range into a value in the right range.
-        return rightMin + (valueScaled * rightSpan)

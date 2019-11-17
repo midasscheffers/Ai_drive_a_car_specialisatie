@@ -1,7 +1,7 @@
 import math as mth
+import numpy as np
 
-def sigmoid(x):
-  return mth.tanh(x)
+
 
 class Node:
 
@@ -22,8 +22,8 @@ class Node:
             output += self.bias
             
             
-            output = sigmoid(output)
-            output = max(0, output)
+            output = self.sigmoid(output)
+            # output = max(0, output)
             self.output = output
         except:
             print("weights and inputs should be the same lenght")
@@ -40,3 +40,6 @@ class Node:
     def change_weights(self):
         for i in range(len(self.weights)):
             self.weights[i] = self.change[i][0]
+    
+    def sigmoid(self, x):
+        return 1/(1+np.exp(-x))

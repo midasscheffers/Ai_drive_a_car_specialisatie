@@ -1,6 +1,6 @@
 import pygame
 import pyglet
-blue = (0, 0, 255, 255)
+blue = (0, 0, 255)
 
 
 class Wall:
@@ -19,5 +19,5 @@ class Wall:
         # )
         pyglet.graphics.draw(2, pyglet.gl.GL_LINES,
             ('v2i', ((self.start_pos[0]), (self.start_pos[1]), (self.end_pos[0]), (self.end_pos[1]))),
-            ('c4B', blue)
+            ('c4B', (0, 0, 255, 255) * 2)
         )
