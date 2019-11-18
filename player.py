@@ -25,8 +25,8 @@ class Player:
         self.rot = 0
         self.dead = False
         self.size = 20
-        self.speed = 100
-        self.rot_speed = 120
+        self.speed = 120
+        self.rot_speed = 125
             # draw
         self.selected = selected
         self.img = pyglet.resource.image("car.png")
@@ -80,6 +80,10 @@ class Player:
         for i in self.detections:
             self.net_input.append(i)
         self.net.set_input(self.net_input)
+
+    
+    def check_for_checkpoint(self, chepoints):
+        pass
         
 
     def cast_rays(self, walls):

@@ -8,6 +8,7 @@ class Wall:
     def __init__(self, xy1, xy2):
         self.start_pos = xy1
         self.end_pos = xy2
+        self.color = (0,0,255,255)
 
     def blit(self):
         # pygame.draw.line(

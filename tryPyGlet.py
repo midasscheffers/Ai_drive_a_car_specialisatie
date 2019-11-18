@@ -3,7 +3,9 @@ import matplotlib.pyplot as plt
 import math as mth
 from player import *
 from wall import *
+from checkpiont import *
 import copy
+import random as r
 
 window = pyglet.window.Window(width=1300, height=820)
 pyglet.vsync = True
@@ -11,6 +13,8 @@ label = pyglet.text.Label("gen: 0", font_name="Comic Sans", font_size=25,
 x=window.width/2, y=window.height-25,
 anchor_x="center", anchor_y="center"
 )
+
+# globals
 
 gen = 0
 
@@ -26,8 +30,10 @@ am_of_players = 200
 cycles = 1
 graph_cycles = 20
 
-
+checkpoints = []
 walls = []
+
+# make all the walls of the game
 
 walls.append(Wall([1, 0], [1, window.height]))
 walls.append(Wall([window.width, 0], [window.width, window.height]))
@@ -51,15 +57,20 @@ walls.append(Wall( [window.width/2 - 600, window.height/2 + 260], [window.width/
 walls.append(Wall( [window.width/2+600, window.height/2-100], [window.width/2+600, window.height/2 - 360] ))
 walls.append(Wall( [window.width/2-600, window.height/2-360], [window.width/2+600, window.height/2 - 360] ))
 
+# make checkpoints
+
+checkpoints.append(Checkpoint([window.width/2+300, window.height/2-200], [window.width/2+300, window.height/2], 2))
 
 
+# greate first players
 for i in range(am_of_players):
     players.append(Player([window.width/2, window.height/2-100], amount_of_rays, False))
 
 
-def draw_line(xy1, xy2):
+def draw_line(xy1, xy2, color):
     pyglet.graphics.draw(2, pyglet.gl.GL_LINES,
-        ('v2i', (int(xy1[0]), int(xy1[1]), int(xy2[0]), int(xy2[1])))
+        ('v2i', (int(xy1[0]), int(xy1[1]), int(xy2[0]), int(xy2[1]))),
+        ('c4B', (color) * 2)
     )
 
 
@@ -128,11 +139,20 @@ def repopulate(players):
     bP.net = copy.deepcopy(best_player.net)
     new_players.append(bP)
 
-    for i in range(len(players) - 1):
+    for i in range(mth.floor((len(players) - 1)/2)):
         p = pick_player(players)
+        p.net.randomize_net(1)
         p.dead = False
         new_players.append(p)
-    
+    for i in range(mth.ceil((len(players) - 1)/2)):
+        p1 = pick_player(players)
+        p2 = pick_player(players)
+        p3 = cross_players(p1, p2)
+        p3.dead = False
+        new_players.append(p3)
+    # for i in range(mth.floor((len(players) - 1)/3)):
+    #     players.append(Player([window.width/2, window.height/2-100], amount_of_rays, False))
+        
     players = []
     players = new_players
     return players
@@ -147,9 +167,23 @@ def pick_player(players):
     index -= 1
     child = Player([window.width/2, window.height/2-100], amount_of_rays, False)
     child.net = copy.deepcopy(players[index].net)
-    # if r.randint(0,1) == 1:
-    child.net.randomize_net(1)
     return child
+
+
+def cross_players(p1, p2):
+    # make child with net of first parrent
+    child = Player([window.width/2, window.height/2-100], amount_of_rays, False)
+    child.net = copy.deepcopy(p1.net)
+    for i in range(len(child.net.nodes)):
+        if not i == 0:
+            for n in range(len(child.net.nodes[i])):
+                node = child.net.nodes[i][n]
+                for w in range(len(node.weights)):
+                    if r.randint(0,1):
+                        weight = p2.net.nodes[i][n].weights[w]
+    return child
+
+
 
 def calculate_fitness(players):
     sum = 0
@@ -170,7 +204,9 @@ def on_draw():
         if not p.dead:
             p.sprite.draw()
     for w in walls:
-        draw_line(w.start_pos, w.end_pos)
+        draw_line(w.start_pos, w.end_pos, w.color)
+    for ch in checkpoints:
+        draw_line(ch.start_pos, ch.end_pos, ch.color)
     
 
 def update(delta_time):
