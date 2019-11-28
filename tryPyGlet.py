@@ -9,7 +9,7 @@ import random as r
 
 window = pyglet.window.Window(width=1300, height=820)
 pyglet.vsync = True
-label = pyglet.text.Label("gen: 0", font_name="Comic Sans", font_size=25,
+label = pyglet.text.Label("gen: 0, players: 100", font_name="Comic Sans", font_size=25,
 x=window.width/2, y=window.height-25,
 anchor_x="center", anchor_y="center"
 )
@@ -26,7 +26,7 @@ best_fitness_table = []
 
 amount_of_rays = 4
 players = []
-am_of_players = 200
+am_of_players = 100
 cycles = 1
 graph_cycles = 20
 
@@ -60,6 +60,10 @@ walls.append(Wall( [window.width/2-600, window.height/2-360], [window.width/2+60
 # make checkpoints
 
 checkpoints.append(Checkpoint([window.width/2+300, window.height/2-200], [window.width/2+300, window.height/2], 2))
+checkpoints.append(Checkpoint([window.width/2+300, window.height/2-200], [window.width/2+600, window.height/2-200], 3))
+checkpoints.append(Checkpoint([window.width/2+300, window.height/2-200], [window.width/2+300, window.height/2-360], 4))
+checkpoints.append(Checkpoint([window.width/2, window.height/2-200], [window.width/2, window.height/2-360], 5))
+checkpoints.append(Checkpoint([window.width/2-300, window.height/2-200], [window.width/2-300, window.height/2-360], 5))
 
 
 # greate first players
@@ -137,21 +141,22 @@ def repopulate(players):
 
     bP = Player([window.width/2, window.height/2-100], amount_of_rays, False)
     bP.net = copy.deepcopy(best_player.net)
+
     new_players.append(bP)
 
-    for i in range(mth.floor((len(players) - 1)/2)):
+    for i in range(int((len(players) - 1)/3)):
         p = pick_player(players)
         p.net.randomize_net(1)
         p.dead = False
         new_players.append(p)
-    for i in range(mth.ceil((len(players) - 1)/2)):
+    for i in range(int(mth.ceil((len(players) - 1)/3))):
         p1 = pick_player(players)
         p2 = pick_player(players)
         p3 = cross_players(p1, p2)
         p3.dead = False
         new_players.append(p3)
-    # for i in range(mth.floor((len(players) - 1)/3)):
-    #     players.append(Player([window.width/2, window.height/2-100], amount_of_rays, False))
+    for i in range(int((len(players) - 1)/3)):
+        new_players.append(Player([window.width/2, window.height/2-100], amount_of_rays, False))
         
     players = []
     players = new_players
@@ -202,7 +207,9 @@ def on_draw():
     label.draw()
     for p in players:
         if not p.dead:
-            p.sprite.draw()
+            # p.sprite.draw()
+            for line in p.boundries:
+                    draw_line([ line[0], line[1] ], [ line[2], line[3] ], (255,0,0,255))
     for w in walls:
         draw_line(w.start_pos, w.end_pos, w.color)
     for ch in checkpoints:
@@ -219,7 +226,7 @@ def update(delta_time):
             gen += 1
             
             gen_table.append(gen-1)
-            label.text = (str("gen: " + str(gen)))
+            label.text = (str("gen: " + str(gen) + " players: " + str(len(players))))
 
             # plot of fitness and score
             fig, axs = plt.subplots(2, 1)
@@ -236,7 +243,6 @@ def update(delta_time):
             axs[1].grid(True)
                             
             if gen % graph_cycles == 0:
-                
                 fig.tight_layout()
                 fig.savefig("graph.png")
 
@@ -248,8 +254,9 @@ def update(delta_time):
                 p.cast_rays(walls)
                 p.set_net_input()
                 p.move(delta_time)
-                p.check_for_hit()
+                p.check_for_hit(walls, checkpoints)
                 p.out_off_bounds(window.width, window.height)
+                
     
                 
         
