@@ -9,7 +9,7 @@ class Player:
     def __init__(self, pos, amount_of_rays, selected):
         # variables for player
             # network
-        self.net = Network([amount_of_rays, 5, 2])
+        self.net = Network([amount_of_rays, 2, 3])
         self.net_input = []
         self.amount_of_rays = amount_of_rays
         self.score = 0
@@ -52,8 +52,10 @@ class Player:
         net_out = self.net.run(True)
         if net_out[1] == 0:
             self.rot += net_out[0] * self.rot_speed * delta_time
-        else:
+        elif net_out[1] == 1:
             self.rot -= net_out[0] * self.rot_speed * delta_time
+        elif net_out[0] == 2:
+            pass
         self.sprite.rotation = -self.rot
         self.accel[0] = mth.cos(mth.radians(self.rot))
         self.accel[1] = mth.sin(mth.radians(self.rot))

@@ -116,5 +116,6 @@ class Network:
             else:
                 for j in range(len(self.nodes[i])):
                     for w in self.nodes[i][j].weights:
-                        w += r.randrange(-1, 2) * r.random() * multiplier
-                    self.nodes[i][j].bias += r.randrange(-1, 2) * r.random() * multiplier
+                        if r.random() < multiplier:
+                            w += r.random() * r.randint(-1, 1)
+                    self.nodes[i][j].bias += r.randint(-1, 1) * r.random()
