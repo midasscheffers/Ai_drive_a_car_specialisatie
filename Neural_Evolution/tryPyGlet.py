@@ -21,7 +21,7 @@ best_fitness_table = []
 
 amount_of_rays = 4
 players = []
-am_of_players = 100
+am_of_players = 200
 cycles = 1
 graph_cycles = 20
 
@@ -66,14 +66,20 @@ walls.append(Wall( [WIDTH/2-600, HEIGHT/2-360], [WIDTH/2+600, HEIGHT/2 - 360] ))
 # make checkpoints
 checkpoints_points = []
 
+# finish
+
+checkpoints.append(Checkpoint([WIDTH/2-200, HEIGHT/2-200], [WIDTH/2-200, HEIGHT/2], 0, True))
+
+# after finish checker
+checkpoints_points.append([[WIDTH/2-190, HEIGHT/2-200], [WIDTH/2-190, HEIGHT/2]])
 #first corner
 checkpoints_points.append([[WIDTH/2+300, HEIGHT/2-200], [WIDTH/2+300, HEIGHT/2]])
 checkpoints_points.append([[WIDTH/2+300, HEIGHT/2-200], [WIDTH/2+600, HEIGHT/2-200]])
 checkpoints_points.append([[WIDTH/2+300, HEIGHT/2-200], [WIDTH/2+300, HEIGHT/2-360]])
 #first long
-checkpoints_points.append([[WIDTH/2+150, HEIGHT/2-200], [WIDTH/2+150, HEIGHT/2-360]])
+# checkpoints_points.append([[WIDTH/2+150, HEIGHT/2-200], [WIDTH/2+150, HEIGHT/2-360]])
 checkpoints_points.append([[WIDTH/2, HEIGHT/2-200], [WIDTH/2, HEIGHT/2-360]])
-checkpoints_points.append([[WIDTH/2-150, HEIGHT/2-200], [WIDTH/2-150, HEIGHT/2-360]])
+# checkpoints_points.append([[WIDTH/2-150, HEIGHT/2-200], [WIDTH/2-150, HEIGHT/2-360]])
 checkpoints_points.append([[WIDTH/2-300, HEIGHT/2-200], [WIDTH/2-300, HEIGHT/2-360]])
 #second corner
 checkpoints_points.append([[WIDTH/2-350, HEIGHT/2-150], [WIDTH/2-600, HEIGHT/2-360]])
@@ -94,10 +100,18 @@ checkpoints_points.append([[WIDTH/2-100, HEIGHT/2+220], [WIDTH/2+100, HEIGHT/2+3
 checkpoints_points.append([[WIDTH/2-100, HEIGHT/2+220], [WIDTH/2+100, HEIGHT/2+220]])
 checkpoints_points.append([[WIDTH/2-100, HEIGHT/2+220], [WIDTH/2, HEIGHT/2+100]])
 checkpoints_points.append([[WIDTH/2-100, HEIGHT/2+220], [WIDTH/2-100, HEIGHT/2+100]])
+# fourth long
+checkpoints_points.append([[WIDTH/2-200, HEIGHT/2+220], [WIDTH/2-200, HEIGHT/2+100]])
+# fifth corner
+checkpoints_points.append([[WIDTH/2-350, HEIGHT/2+160], [WIDTH/2-200, HEIGHT/2+100]])
+checkpoints_points.append([[WIDTH/2-400, HEIGHT/2+100], [WIDTH/2-200, HEIGHT/2+100]])
+# sixth long
+checkpoints_points.append([[WIDTH/2-400, HEIGHT/2], [WIDTH/2-200, HEIGHT/2]])
 
 
+# make all checkpionts and ad them to the checkpoint list
 for i in range(len(checkpoints_points)):
-    checkpoints.append(Checkpoint(checkpoints_points[i][0], checkpoints_points[i][1], i+2))
+    checkpoints.append(Checkpoint(checkpoints_points[i][0], checkpoints_points[i][1], i+1, False))
 
 
 # greate first players
@@ -157,6 +171,20 @@ def find_best_fitt(players):
             best_fit_player = p
     return best_fit, best_fit_player
 
+def find_best_players(players):
+    best_f = 0
+    bPs = []
+    for p in players:
+        if p.fitness > best_f:
+            bPs = []
+            best_f = p.fitness
+            bPs.append(p)
+        elif p.fitness == best_f:
+            bPs.append(p)
+    if len(bPs) > 3:
+        bPs = bPs[:3]
+    return bPs
+
 
 def repopulate(players):
     calculate_fitness(players)
@@ -173,8 +201,16 @@ def repopulate(players):
 
     new_players = []
 
+    # bPs = find_best_players(players)
+    # for bP in bPs:
+    #     p = Player([WIDTH/2, HEIGHT/2-100], amount_of_rays, False)
+    #     p.net = copy.deepcopy(bP.net)
+    #     p.net.randomize_net(.00001)
+    #     new_players.append(p)
+
     bP = Player([WIDTH/2, HEIGHT/2-100], amount_of_rays, False)
     bP.net = copy.deepcopy(best_player.net)
+    bP.color = (0, 150, 255, 255)
 
     new_players.append(bP)
 
@@ -223,14 +259,14 @@ def cross_players(p1, p2):
     return child
 
 
-
 def calculate_fitness(players):
     sum = 0
     for p in players:
         sum += p.score
     for p in players:
-        p.fitness = p.check_piont
-        #(((mth.pow(p.check_piont, 3) * p.score) - p.rot/360) / sum) * am_of_players
+        p.fitness = (p.check_piont + (len(checkpoints)+1) * p.times_finished) - 0
+        # p.fitness = p.score
+        # (((mth.pow(p.check_piont, 3) * p.score) - p.rot/360) / sum) * am_of_players
         #(mth.pow(p.check_piont, 2) * p.score)
         #p.score / sum
 
@@ -244,7 +280,9 @@ def on_draw():
         if not p.dead:
             # p.sprite.draw()
             for line in p.boundries:
-                    draw_line([ line[0], line[1] ], [ line[2], line[3] ], (255,0,0,255))
+                    draw_line([ line[0], line[1] ], [ line[2], line[3] ], p.color)
+            for rp in p.ray_pts:
+                draw_line([p.pos[0], p.pos[1]], [rp[0], rp[1]], (255, 0, 255, 255))
     for w in walls:
         draw_line(w.start_pos, w.end_pos, w.color)
     for ch in checkpoints:
@@ -285,9 +323,6 @@ def update(delta_time):
                 fig.tight_layout()
                 fig.savefig("graph.png")
 
-            
-
-
         for p in players:
             if not p.dead:
                 p.cast_rays(walls)
@@ -296,9 +331,6 @@ def update(delta_time):
                 p.check_for_hit(walls, checkpoints)
                 p.out_off_bounds(WIDTH, HEIGHT)
                 
-    
-                
-        
 
 pyglet.clock.schedule_interval(update, 1/60)
 

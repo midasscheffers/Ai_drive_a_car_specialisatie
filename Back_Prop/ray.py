@@ -2,18 +2,18 @@ import math as mth
 
 class Ray:
 
-    def __init__(self, pos, dir):
+    def __init__(self, pos, _dir):
+        self.color = (255, 0, 255, 255)
         self.pos = pos
-        self.vect = (mth.cos(dir), mth.sin(dir))
-    
-    def blit(self):
-        pygame.draw.line(
-            gameDisplay,
-            light_grey,
-            [int(self.pos[0] + translationX),int(self.pos[1] + translationY)],
-            [int(self.pos[0] + translationX + self.vect[0] * 20), int(self.pos[1] + translationY + self.vect[1] * 20)]
-        )
-    
+        self.dir = _dir
+        self.vect = [mth.cos(self.dir), mth.sin(self.dir)]
+
+
+    def rotate_ray(self, add):
+        self.dir += add
+        self.vect = [mth.cos(self.dir), mth.sin(self.dir)]
+
+
     def cast(self, wall):
         x1 = wall.start_pos[0]
         y1 = wall.start_pos[1]
@@ -37,7 +37,7 @@ class Ray:
         if t > 0 and t < 1 and u > 0:
             ptx = x1 + t * (x2 - x1)
             pty = y1 + t * (y2 - y1)
-            pt = (ptx, pty)
+            pt = [ptx, pty]
             self.cast_hit_point = pt
             self.cast_hit = True
             return pt
