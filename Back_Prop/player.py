@@ -9,17 +9,13 @@ class Player:
     def __init__(self, pos, amount_of_rays, ray_degrees, selected):
         # variables for player
             # network
-        self.net = Network([amount_of_rays, 2, 3])
+        self.net = Network([amount_of_rays, 16, 16, 5, 3])
         self.net_input = []
         self.amount_of_rays = amount_of_rays
         self.rays = []
         self.detections = []
         self.ray_pts = []
         self.ray_degrees = ray_degrees
-        self.fitness = 1
-        self.check_piont = 1
-        self.score = 0
-        self.times_finished = 0
             # game
         self.pos = pos
         self.vel = [1, 0]
@@ -50,16 +46,16 @@ class Player:
             self.ray_pts.append([0,0])
     
 
-    def move(self, delta_time):
+    def move(self, delta_time, d_out):
         temp_rot = self.rot
         temp_pos = self.pos
         net_out = self.net.run(True)
-        if net_out[1] == 0:
-            self.rot += net_out[0] * self.rot_speed * delta_time
+        if net_out[1] == 0: # d_out can be net_out[1]
+            self.rot += self.rot_speed * delta_time # net_out[0] * 
         elif net_out[1] == 1:
             pass
         elif net_out[1] == 2:
-            self.rot -= net_out[0] * self.rot_speed * delta_time
+            self.rot -= self.rot_speed * delta_time # net_out[0] * 
         self.sprite.rotation = -self.rot
         self.accel[0] = mth.cos(mth.radians(self.rot))
         self.accel[1] = mth.sin(mth.radians(self.rot))
@@ -73,12 +69,11 @@ class Player:
         for r in self.rays:
             r.pos = self.pos
             if net_out[1] == 0:
-                r.rotate_ray(mth.radians(net_out[0] * self.rot_speed * delta_time))
-            elif net_out[0] == 1:
+                r.rotate_ray(mth.radians(self.rot_speed * delta_time)) # net_out[0] * 
+            elif net_out[1] == 1:
                 pass
             elif net_out[1] == 2:
-                r.rotate_ray(mth.radians(net_out[0] * self.rot_speed * delta_time) * -1)
-        self.score += 1
+                r.rotate_ray(mth.radians(self.rot_speed * delta_time) * -1) # net_out[0] * 
 
 
     def move_boundries(self, rot, old_pos):
@@ -88,6 +83,7 @@ class Player:
             line[1] = self.pos[1] + (line[4] * mth.sin(mth.radians(amount_of_rot))) + (line[5] * mth.cos(mth.radians(amount_of_rot)))
             line[2] = self.pos[0] + (line[6] * mth.cos(mth.radians(amount_of_rot))) - (line[7] * mth.sin(mth.radians(amount_of_rot)))
             line[3] = self.pos[1] + (line[6] * mth.sin(mth.radians(amount_of_rot))) + (line[7] * mth.cos(mth.radians(amount_of_rot)))
+
 
     def reset_rays(self):
         for i in range(0, len(self.rays)):
@@ -101,22 +97,15 @@ class Player:
         for i in range(len(self.detections)):
             if best_detect[1] < self.detections[i]:
                 best_detect = [i, self.detections[i]]
-        
-        
         best_r = self.rays[best_detect[0]]
         best_r.color = (0, 255, 255, 255)
-
         our_rot = self.rot % 360
         ray_rot = mth.degrees(best_r.dir) % 360
-
         if ray_rot-our_rot < 180 and ray_rot-our_rot > 0:
-            print(0)
             return 0
         else:
-            print(2)
             return 2
 
-        print(1)
         return 2
 
 
@@ -127,7 +116,6 @@ class Player:
                 y1 = wall.start_pos[1]
                 x2 = wall.end_pos[0]
                 y2 = wall.end_pos[1]
-
                 x3 = line[0]
                 y3 = line[1]
                 x4 = line[2]
@@ -135,24 +123,19 @@ class Player:
                 if self.lineline_intersect(x1, y1, x2, y2, x3, y3, x4, y4):
                     self.dead = True
 
-            
-                
-
-                
-
     
     def lineline_intersect(self, x1, y1, x2, y2, x3, y3, x4, y4):
-        uA = ((x4-x3)*(y1-y3) - (y4-y3)*(x1-x3)) / ((y4-y3)*(x2-x1) - (x4-x3)*(y2-y1))
-        uB = ((x2-x1)*(y1-y3) - (y2-y1)*(x1-x3)) / ((y4-y3)*(x2-x1) - (x4-x3)*(y2-y1))
-        if (uA >= 0 and uA <= 1 and uB >= 0 and uB <= 1):
-            return True
+        if not ((y4-y3)*(x2-x1) - (x4-x3)*(y2-y1)) == 0:
+            uA = ((x4-x3)*(y1-y3) - (y4-y3)*(x1-x3)) / ((y4-y3)*(x2-x1) - (x4-x3)*(y2-y1))
+            uB = ((x2-x1)*(y1-y3) - (y2-y1)*(x1-x3)) / ((y4-y3)*(x2-x1) - (x4-x3)*(y2-y1))
+            if (uA >= 0 and uA <= 1 and uB >= 0 and uB <= 1):
+                return True
         return False
 
 
     def out_off_bounds(self, xmax, ymax):
         if self.pos[0] < 0 or self.pos[0] > xmax or self.pos[1] < 0 or self.pos[1] > ymax:
             self.dead = True
-
 
 
     def set_net_input(self):

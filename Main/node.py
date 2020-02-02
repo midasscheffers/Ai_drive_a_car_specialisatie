@@ -11,23 +11,18 @@ class Node:
         self.weights = weights
         self.output = output
         self.change = []
-        for _ in self.weights:
-            self.change.append([])
         self.dis_outpt = 0
-
 
     def calc_output(self):
         output = 0
-        sum_weights = 0
         try:
             for i in range(len(self.inputs)):
                 output += ((self.inputs[i].output * self.weights[i]))
-                sum_weights += self.weights[i]
 
             output += self.bias
             
-            output = output/sum_weights
-            # output = self.sigmoid(output)
+            
+            output = self.sigmoid(output)
             # output = max(0, output)
             self.output = output
         except:
@@ -42,13 +37,9 @@ class Node:
             avr = avr / len(self.change[i])
             self.change[i] = [avr]
     
-
     def change_weights(self):
         for i in range(len(self.weights)):
-            self.weights[i] = self.weights[i]+self.change[i][0]
-            self.change[i] = []
-            
+            self.weights[i] = self.change[i][0]
     
-
     def sigmoid(self, x):
         return 1/(1+np.exp(-x))

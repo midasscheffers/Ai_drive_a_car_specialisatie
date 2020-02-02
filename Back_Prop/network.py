@@ -46,6 +46,7 @@ class Network:
 
 
     def calc_cost(self, dis_out):
+        mult = 1
         # print("network calculating cost")
         for layer in self.nodes:
             for node in layer:
@@ -72,7 +73,7 @@ class Network:
                     if node.dis_outpt > .5:
                         if w > .5:
                             if type(node.change[node.weights.index(w)]) == list: 
-                                node.change[node.weights.index(w)].append(1)
+                                node.change[node.weights.index(w)].append(1 * mult)
                                 
                                 # set dis_out for prev node
                                 if type(node.inputs[node.weights.index(w)].dis_outpt) == list:
@@ -80,7 +81,7 @@ class Network:
                                 else:
                                     node.inputs[node.weights.index(w)].dis_outpt = [1]
                             else:
-                                node.change.append(1)
+                                node.change.append(1 * mult)
                                 # set dis_out for prev node
                                 if type(node.inputs[node.weights.index(w)].dis_outpt) == list:
                                     node.inputs[node.weights.index(w)].dis_outpt.append(1)
@@ -89,50 +90,50 @@ class Network:
 
                         if w <= .5:
                             if type(node.change[node.weights.index(w)]) == list: 
-                                node.change[node.weights.index(w)].append(0)
+                                node.change[node.weights.index(w)].append(1 * mult)
                                 # set dis_out for prev node
                                 if type(node.inputs[node.weights.index(w)].dis_outpt) == list:
-                                    node.inputs[node.weights.index(w)].dis_outpt.append(0)
+                                    node.inputs[node.weights.index(w)].dis_outpt.append(1)
                                 else:
-                                    node.inputs[node.weights.index(w)].dis_outpt = [0]
+                                    node.inputs[node.weights.index(w)].dis_outpt = [1]
                             else:
-                                node.change.append(0)
+                                node.change.append(1 * mult)
                                 # set dis_out for prev node
                                 if type(node.inputs[node.weights.index(w)].dis_outpt) == list:
-                                    node.inputs[node.weights.index(w)].dis_outpt.append(0)
+                                    node.inputs[node.weights.index(w)].dis_outpt.append(1)
                                 else:
-                                    node.inputs[node.weights.index(w)].dis_outpt = [0]
+                                    node.inputs[node.weights.index(w)].dis_outpt = [1]
                     if node.dis_outpt <= .5:
                         if w > .5:
                             if type(node.change[node.weights.index(w)]) == list: 
-                                node.change[node.weights.index(w)].append(0)
+                                node.change[node.weights.index(w)].append(-1 * mult)
                                 # set dis_out for prev node
                                 if type(node.inputs[node.weights.index(w)].dis_outpt) == list:
-                                    node.inputs[node.weights.index(w)].dis_outpt.append(0)
+                                    node.inputs[node.weights.index(w)].dis_outpt.append(-1)
                                 else:
-                                    node.inputs[node.weights.index(w)].dis_outpt = [0]
+                                    node.inputs[node.weights.index(w)].dis_outpt = [-1]
                             else:
-                                node.change.append(0)
+                                node.change.append(-1 * mult)
                                 # set dis_out for prev node
                                 if type(node.inputs[node.weights.index(w)].dis_outpt) == list:
-                                    node.inputs[node.weights.index(w)].dis_outpt.append(0)
+                                    node.inputs[node.weights.index(w)].dis_outpt.append(-1)
                                 else:
-                                    node.inputs[node.weights.index(w)].dis_outpt = [0]
+                                    node.inputs[node.weights.index(w)].dis_outpt = [-1]
                         if w <= .5:
                             if type(node.change[node.weights.index(w)]) == list: 
-                                node.change[node.weights.index(w)].append(1)
+                                node.change[node.weights.index(w)].append(-1 * mult)
                                 # set dis_out for prev node
                                 if type(node.inputs[node.weights.index(w)].dis_outpt) == list:
-                                    node.inputs[node.weights.index(w)].dis_outpt.append(1)
+                                    node.inputs[node.weights.index(w)].dis_outpt.append(-1)
                                 else:
-                                    node.inputs[node.weights.index(w)].dis_outpt = [1]
+                                    node.inputs[node.weights.index(w)].dis_outpt = [-1]
                             else:
-                                node.change.append(1)
+                                node.change.append(-1 * mult)
                                 # set dis_out for prev node
                                 if type(node.inputs[node.weights.index(w)].dis_outpt) == list:
-                                    node.inputs[node.weights.index(w)].dis_outpt.append(1)
+                                    node.inputs[node.weights.index(w)].dis_outpt.append(-1)
                                 else:
-                                    node.inputs[node.weights.index(w)].dis_outpt = [1]
+                                    node.inputs[node.weights.index(w)].dis_outpt = [-1]
 
         # for i in range(len(self.nodes)-1, 0, -1):
         #     if i == 0:
@@ -196,6 +197,7 @@ class Network:
         for i in range(nummber_of_items):
             rand_list.append(r.uniform(-1,1))
         return rand_list
+
 
     def randomize_net(self, multiplier):
         for i in range(len(self.nodes)):

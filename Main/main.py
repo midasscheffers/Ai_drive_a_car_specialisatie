@@ -7,6 +7,7 @@ from checkpiont import *
 import copy
 import random as r
 
+# globals
 
 WIDTH = 1300
 HEIGHT = 820
@@ -40,88 +41,6 @@ anchor_x="center", anchor_y="center"
 track_name = "base_track"
 # track_name = "what_is_this"
 track_file_name = "tracks/" + track_name + ".track"
-
-# globals
-
-
-# # make all the walls of the game
-
-# walls.append(Wall([1, 0], [1, HEIGHT]))
-# walls.append(Wall([WIDTH, 0], [WIDTH, HEIGHT]))
-# walls.append(Wall([1, HEIGHT-1], [WIDTH, HEIGHT-1]))
-# walls.append(Wall([1, 1], [WIDTH, 1]))
-# walls.append(Wall( [WIDTH/2-300, HEIGHT/2-200], [WIDTH/2+300, HEIGHT/2-200] ))
-# walls.append(Wall( [WIDTH/2-300, HEIGHT/2-200], [WIDTH/2-400, HEIGHT/2-100] ))
-# walls.append(Wall( [WIDTH/2-400, HEIGHT/2+100], [WIDTH/2-400, HEIGHT/2-100] ))
-# walls.append(Wall( [WIDTH/2-200, HEIGHT/2], [WIDTH/2+300, HEIGHT/2] ))
-# walls.append(Wall( [WIDTH/2-200, HEIGHT/2], [WIDTH/2+300, HEIGHT/2] ))
-# walls.append(Wall( [WIDTH/2-200, HEIGHT/2], [WIDTH/2-200, HEIGHT/2 + 100] ))
-# walls.append(Wall( [WIDTH/2, HEIGHT/2 + 100], [WIDTH/2-200, HEIGHT/2 + 100] ))
-# walls.append(Wall( [WIDTH/2-400, HEIGHT/2 + 100], [WIDTH/2-300, HEIGHT/2 + 220] ))
-# walls.append(Wall( [WIDTH/2-100, HEIGHT/2 + 220], [WIDTH/2-300, HEIGHT/2 + 220] ))
-# walls.append(Wall( [WIDTH/2, HEIGHT/2 + 100], [WIDTH/2+100, HEIGHT/2 + 200] ))
-# walls.append(Wall( [WIDTH/2 + 100, HEIGHT/2 + 360], [WIDTH/2+100, HEIGHT/2 + 200] ))
-# walls.append(Wall( [WIDTH/2+600, HEIGHT/2-100], [WIDTH/2+300, HEIGHT/2] ))
-# walls.append(Wall( [WIDTH/2 + 100, HEIGHT/2 + 360], [WIDTH/2-500, HEIGHT/2 + 360] ))
-# walls.append(Wall( [WIDTH/2 - 600, HEIGHT/2 + 260], [WIDTH/2-500, HEIGHT/2 + 360] ))
-# walls.append(Wall( [WIDTH/2 - 600, HEIGHT/2 + 260], [WIDTH/2-600, HEIGHT/2 - 360] ))
-# walls.append(Wall( [WIDTH/2+600, HEIGHT/2-100], [WIDTH/2+600, HEIGHT/2 - 360] ))
-# walls.append(Wall( [WIDTH/2-600, HEIGHT/2-360], [WIDTH/2+600, HEIGHT/2 - 360] ))
-
-# # make checkpoints
-# checkpoints_points = []
-
-# # finish
-
-# checkpoints.append(Checkpoint([WIDTH/2-200, HEIGHT/2-200], [WIDTH/2-200, HEIGHT/2], 0, True))
-
-# # after finish checker
-# checkpoints_points.append([[WIDTH/2-190, HEIGHT/2-200], [WIDTH/2-190, HEIGHT/2]])
-# #first corner
-# checkpoints_points.append([[WIDTH/2+300, HEIGHT/2-200], [WIDTH/2+300, HEIGHT/2]])
-# checkpoints_points.append([[WIDTH/2+300, HEIGHT/2-200], [WIDTH/2+600, HEIGHT/2-200]])
-# checkpoints_points.append([[WIDTH/2+300, HEIGHT/2-200], [WIDTH/2+300, HEIGHT/2-360]])
-# #first long
-# # checkpoints_points.append([[WIDTH/2+150, HEIGHT/2-200], [WIDTH/2+150, HEIGHT/2-360]])
-# checkpoints_points.append([[WIDTH/2, HEIGHT/2-200], [WIDTH/2, HEIGHT/2-360]])
-# # checkpoints_points.append([[WIDTH/2-150, HEIGHT/2-200], [WIDTH/2-150, HEIGHT/2-360]])
-# checkpoints_points.append([[WIDTH/2-300, HEIGHT/2-200], [WIDTH/2-300, HEIGHT/2-360]])
-# #second corner
-# checkpoints_points.append([[WIDTH/2-350, HEIGHT/2-150], [WIDTH/2-600, HEIGHT/2-360]])
-# checkpoints_points.append([[WIDTH/2-375, HEIGHT/2-125], [WIDTH/2-600, HEIGHT/2-230]])
-# checkpoints_points.append([[WIDTH/2-400, HEIGHT/2-100], [WIDTH/2-600, HEIGHT/2-100]])
-# #second long
-# checkpoints_points.append([[WIDTH/2-400, HEIGHT/2-50], [WIDTH/2-600, HEIGHT/2-50]])
-# checkpoints_points.append([[WIDTH/2-400, HEIGHT/2], [WIDTH/2-600, HEIGHT/2]])
-# checkpoints_points.append([[WIDTH/2-400, HEIGHT/2+50], [WIDTH/2-600, HEIGHT/2+50]])
-# checkpoints_points.append([[WIDTH/2-400, HEIGHT/2+100], [WIDTH/2-600, HEIGHT/2+100]])
-# #third corner
-# checkpoints_points.append([[WIDTH/2-350, HEIGHT/2+160], [WIDTH/2-550, HEIGHT/2+310]])
-# checkpoints_points.append([[WIDTH/2-300, HEIGHT/2+220], [WIDTH/2-300, HEIGHT/2+360]])
-# #third long
-# checkpoints_points.append([[WIDTH/2-100, HEIGHT/2+220], [WIDTH/2-100, HEIGHT/2+360]])
-# # fourth corner
-# checkpoints_points.append([[WIDTH/2-100, HEIGHT/2+220], [WIDTH/2+100, HEIGHT/2+360]])
-# checkpoints_points.append([[WIDTH/2-100, HEIGHT/2+220], [WIDTH/2+100, HEIGHT/2+220]])
-# checkpoints_points.append([[WIDTH/2-100, HEIGHT/2+220], [WIDTH/2, HEIGHT/2+100]])
-# checkpoints_points.append([[WIDTH/2-100, HEIGHT/2+220], [WIDTH/2-100, HEIGHT/2+100]])
-# # fourth long
-# checkpoints_points.append([[WIDTH/2-200, HEIGHT/2+220], [WIDTH/2-200, HEIGHT/2+100]])
-# # fifth corner
-# checkpoints_points.append([[WIDTH/2-350, HEIGHT/2+160], [WIDTH/2-200, HEIGHT/2+100]])
-# checkpoints_points.append([[WIDTH/2-400, HEIGHT/2+100], [WIDTH/2-200, HEIGHT/2+100]])
-# # sixth long
-# checkpoints_points.append([[WIDTH/2-400, HEIGHT/2], [WIDTH/2-200, HEIGHT/2]])
-
-
-# # make all checkpionts and ad them to the checkpoint list
-# for i in range(len(checkpoints_points)):
-#     checkpoints.append(Checkpoint(checkpoints_points[i][0], checkpoints_points[i][1], i+1, False))
-
-
-    
-
-
 
 # greate first players
 for i in range(am_of_players):
@@ -164,12 +83,14 @@ def calc_avr_fitness(players):
     avr = tot_fit/len(players)
     return avr
 
+
 def find_best_score(players):
     best_score = 0
     for p in players:
         if p.score > best_score:
             best_score = p.score
     return best_score
+
 
 def find_best_fitt(players):
     best_fit = 0
@@ -179,6 +100,7 @@ def find_best_fitt(players):
             best_fit = p.fitness
             best_fit_player = p
     return best_fit, best_fit_player
+
 
 def find_best_players(players):
     best_f = 0
@@ -240,10 +162,7 @@ def repopulate(players):
     bP.net = copy.deepcopy(best_player.net)
     bP.color = (0, 150, 255, 255)
     global max_laps
-    print(max_laps)
-    print(bP.times_finished)
     max_laps = bP.times_finished
-    print(max_laps)
 
     new_players.append(bP)
 

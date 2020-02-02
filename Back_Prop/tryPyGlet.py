@@ -14,7 +14,7 @@ HEIGHT = 820
 gen = 0
 
 
-amount_of_rays = 90
+amount_of_rays = 170
 players = []
 am_of_players = 1
 cycles = 1
@@ -57,7 +57,7 @@ walls.append(Wall( [WIDTH/2-600, HEIGHT/2-360], [WIDTH/2+600, HEIGHT/2 - 360] ))
 
 # greate first players
 for i in range(am_of_players):
-    players.append(Player([WIDTH/2, HEIGHT/2-100], amount_of_rays, 90, False))
+    players.append(Player([WIDTH/2, HEIGHT/2-100], amount_of_rays, 170, False))
 
 
 def draw_line(xy1, xy2, color):
@@ -89,12 +89,12 @@ def on_draw():
     label.draw()
     for p in players:
         if not p.dead:
-            # p.sprite.draw()
             for line in p.boundries:
                     draw_line([ line[0], line[1] ], [ line[2], line[3] ], p.color)
             for rp in p.ray_pts:
                 draw_line([p.pos[0], p.pos[1]], [rp[0], rp[1]], (p.rays[p.ray_pts.index(rp)]).color)
                 (p.rays[p.ray_pts.index(rp)]).color = (255, 0, 255, 255)
+            # p.sprite.draw()
     for w in walls:
         draw_line(w.start_pos, w.end_pos, w.color)
     # else:
@@ -124,8 +124,9 @@ def update(delta_time):
             if not p.dead:
                 p.cast_rays(walls)
                 p.set_net_input()
-                p.move(.02)
-                p.net.calc_cost(p.find_dis_out())
+                d_out = p.find_dis_out()
+                p.move(.2, d_out)
+                p.net.calc_cost(d_out)
                 p.check_for_hit(walls)
                 p.out_off_bounds(WIDTH, HEIGHT)
                 
